@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"path/filepath"
 	core "github.com/gzjjjfree/hello"
+	_ "github.com/gzjjjfree/hello/proxy/vmess/inbound"
 )
 
 var (
@@ -20,16 +21,19 @@ func Version() string {
 }
 
 func VersionStatement() string {
-	return fmt.Sprintf("HELLO %s (%s) %s (%s %s/%s)\n%s", Version(), codename, build, runtime.Version(), runtime.GOOS, runtime.GOARCH, intro)	
+	return fmt.Sprintf("Hello %s (%s) %s (%s %s/%s)\n%s", Version(), codename, build, runtime.Version(), runtime.GOOS, runtime.GOARCH, intro)	
 }
 
-func startHELLO() {
+func startHello() {
 	configFile, err := getConfigFilePath()
 	config, err := core.Configload(configFile)
 	if err != nil {
 		fmt.Println("read the configFile err is: ", err)
-	} else {
-		fmt.Println("configFile from: ", config)
+	} 
+
+	server, err := core.New(config)
+	if server == nil {
+		fmt.Println("server is error")
 	}
 }
 
@@ -45,5 +49,5 @@ func getConfigFilePath() (string, error) {
 }
 func main () {
 	fmt.Println(VersionStatement())
-	startHELLO()
+	startHello()
 }
