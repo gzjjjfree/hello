@@ -1,0 +1,170 @@
+{
+    "policy": null,
+    "log": {  
+      "access": "none",  
+                     
+                     
+      "error": "none",  
+      "loglevel": "none"  
+    },
+    "inbounds": [   
+      {
+        "tag": "proxy", 
+        "port": 54321,   
+        "listen": "127.0.0.1",  
+        "protocol": "socks", 
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls"
+          ],
+          "metadataOnly": false
+        },
+        "settings": {
+          "auth": "noauth",  
+          "udp": true,
+          "ip": null,
+          "address": null,
+          "clients": null
+        },
+        "streamSettings": null
+      }
+    ],
+    "outbounds": [ 
+      {
+        "tag": "proxy",
+        "protocol": "vmess", 
+        "settings": {
+          "vnext": [
+            {
+              "address": "172.67.68.118",   
+              "port": 443,                
+              "users": [
+                {
+                  "id": "e44fd971-3427-4689-ad8f-1d4c2e831093",    
+                  "alterId": 0,                  
+                  
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+         
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls", 
+          "tlsSettings": {
+            "servername": "www.gzbao.top"
+          },
+          "wsSettings": {
+            "path": "/",
+            "headers": {
+              "Host": "www.gzbao.top"
+            }
+          }
+          },
+        
+    
+        "mux": {   
+          "enabled": true,
+          "concurrency": 8
+        }
+     }, 
+      {
+        "tag": "proxy2",
+        "protocol": "vmess", 
+        "settings": {
+          "vnext": [
+            {
+              "address": "game.gzbaobao.top",  
+              "port": 443,                 
+              "users": [
+                {
+                  "id": "e44fd971-3427-4689-ad8f-1d4c2e831093",   
+                  "alterId": 0,                  
+                  
+                  "security": "auto"
+                }
+              ]
+            }
+          ]
+         
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls"
+  
+          },
+          "mux": {   
+          "enabled": true,
+          "concurrency": 8
+        }
+     },
+    
+     {
+      "protocol": "freedom",
+      "settings": {},
+      "tag": "direct" 
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "adblock"
+    }
+  
+     
+    ],
+    "dns": {
+      "servers": [
+        "https://dns.google/dns-query"
+      ],
+      "queryStrategy": "UseIPv4"
+    },
+    "stats": null,
+    "routing": {
+      "domainStrategy": "IPOnDemand",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy2",
+          "domain": ["domain:dns.google"] 
+        },
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "domain": [
+            "clarity.ms",
+            "geosite:geolocation-!cn"
+          ] 
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "static.jyshare.com",
+            "geosite:cn"
+            ]
+        },
+        {
+          "type": "field",
+          "outboundTag": "adblock",
+          "domain": [
+            "domain:algolia.net",
+            "geosite:category-ads-all"
+            
+          ] 
+        },
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "ip": [
+            "geoip:cn",
+            "geoip:private"
+          ]
+        }
+      ]
+    },
+    "reverse": null,
+    "transport": null
+  }

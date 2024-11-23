@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime"
 	"path/filepath"
+	core "github.com/gzjjjfree/hello"
 )
 
 var (
@@ -24,10 +25,12 @@ func VersionStatement() string {
 
 func startHELLO() {
 	configFile, err := getConfigFilePath()
+	config, err := core.Configload(configFile)
 	if err != nil {
 		fmt.Println("read the configFile err is: ", err)
 	} else {
-		fmt.Println("configFile from: ", configFile)
+		fmt.Println("configFile from: ", config)
+		fmt.Println("configFile outboundsfrom: ", config.GetOutbounds()[0], config.GetOutbounds()[1], config.GetOutbounds()[2], )
 	}
 }
 

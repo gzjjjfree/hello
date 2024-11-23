@@ -6,12 +6,12 @@ option go_package = "github.com/gzjjjfree/hello;core";
 message Config { // Config 是 V2Ray 的主配置。V2Ray 以该配置为输入并相应地运行。
     // Inbound handler configurations. Must have at least one item.
     // 入站处理程序配置。必须至少有一个项目
-    repeated InboundHandlerConfig inbound = 1;
+    repeated InboundHandlerConfig inbounds = 1;
   
     // Outbound handler configurations. Must have at least one item. The first
     // item is used as default for routing.
     // 出站处理程序配置。必须至少有一个项目。第一个项目用作路由的默认值。
-    repeated OutboundHandlerConfig outbound = 2;
+    repeated OutboundHandlerConfig outbounds = 2;
   
     reserved 3;
   
@@ -26,38 +26,22 @@ message Config { // Config 是 V2Ray 的主配置。V2Ray 以该配置为输入�
   // InboundHandlerConfig is the configuration for inbound handler.
 // InboundHandlerConfig 是入站处理程序的配置。
 message InboundHandlerConfig {
-    // Tag of the inbound handler. The tag must be unique among all inbound
-    // handlers
-    // 入站处理程序的标签。该标签在所有入站处理程序中必须是唯一的处理程序
     string tag = 1;
-    // Settings for how this inbound proxy is handled.
-    // 关于如何处理此入站代理的设置。
-    TypedMessage receiver_settings = 2;
-    // Settings for inbound proxy. Must be one of the inbound proxies.
-    // 入站代理的设置。必须是入站代理之一。
-    TypedMessage proxy_settings = 3;
+  string protocol = 2;
 }
 
 // OutboundHandlerConfig is the configuration for outbound handler.
 // OutboundHandlerConfig 是出站处理程序的配置。
 message OutboundHandlerConfig {
-    // Tag of this outbound handler.
-    // 此出站处理程序的标签。
     string tag = 1;
-    // Settings for how to dial connection for this outbound handler.
-    // 关于如何为此出站处理程序拨号连接的设置。
-    TypedMessage sender_settings = 2;
-    // Settings for this outbound proxy. Must be one of the outbound proxies.
-    // 此出站代理的设置。必须是出站代理之一。
-    TypedMessage proxy_settings = 3;
-
+  string protocol = 2;
 }
 
 // TypedMessage is a serialized proto message along with its type name.
 message TypedMessage { // TypedMessage 是带有其类型名称的序列化原始消息。
     // The name of the message type, retrieved from protobuf API.
     // 从 protobuf API 中检索的消息类型的名称
-    string type = 1;
+    //string type = 1;
     // Serialized proto message. 序列化的原始消息。
-    bytes value = 2;
+    bytes value = 1;
   }
