@@ -25,6 +25,6 @@ func Configload(input string) (*Config, error) {
 		fmt.Println("解析 config.json 文件出错: ", err)
 		return nil, err
 	}
-	fmt.Println("config: ", config)
+	//fmt.Println("config: ", config)
 	return &config, nil
 }

@@ -30,7 +30,6 @@ func startHELLO() {
 		fmt.Println("read the configFile err is: ", err)
 	} else {
 		fmt.Println("configFile from: ", config)
-		fmt.Println("configFile outboundsfrom: ", config.GetOutbounds()[0], config.GetOutbounds()[1], config.GetOutbounds()[2], )
 	}
 }
 

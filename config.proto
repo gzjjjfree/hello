@@ -3,45 +3,95 @@ syntax = "proto3";
 package hello.core;
 option go_package = "github.com/gzjjjfree/hello;core";
 
-message Config { // Config 是 V2Ray 的主配置。V2Ray 以该配置为输入并相应地运行。
-    // Inbound handler configurations. Must have at least one item.
+message Config { 
     // 入站处理程序配置。必须至少有一个项目
-    repeated InboundHandlerConfig inbounds = 1;
+    repeated InboundHandlerConfig  inbounds  = 1;
   
-    // Outbound handler configurations. Must have at least one item. The first
-    // item is used as default for routing.
     // 出站处理程序配置。必须至少有一个项目。第一个项目用作路由的默认值。
     repeated OutboundHandlerConfig outbounds = 2;
   
-    reserved 3;
-  
-    // App is for configurations of all features in V2Ray. A feature must
-    // App 用于配置 V2Ray 中的所有功能。功能必须
-    // implement the Feature interface, and its config type must be registered
-    // 实现 Feature 接口，并且必须注册其配置类型，通过common.RegisterConfig。
-    // through common.RegisterConfig.
-    repeated TypedMessage app = 4;
-  }
+    DnsHandlerConfig               dns       = 3;
 
-  // InboundHandlerConfig is the configuration for inbound handler.
+    RoutingHandlerConfig           routing   = 4;
+}
+
 // InboundHandlerConfig 是入站处理程序的配置。
 message InboundHandlerConfig {
     string tag = 1;
-  string protocol = 2;
+    string protocol = 2;
+    int32 port = 3;
+    string listen = 4;
+    SniffingConfig sniffing = 5;
 }
 
-// OutboundHandlerConfig is the configuration for outbound handler.
+message SniffingConfig {
+    bool enabled = 1;
+    repeated string destOverride = 2;
+}
+
 // OutboundHandlerConfig 是出站处理程序的配置。
 message OutboundHandlerConfig {
-    string tag = 1;
-  string protocol = 2;
+    string tag      = 1;
+    string protocol = 2;
+    SettingsConfig settings = 3;
+    StreamSettingsConfig streamSettings = 4;
+    MuxConfig mux = 5;
 }
 
-// TypedMessage is a serialized proto message along with its type name.
-message TypedMessage { // TypedMessage 是带有其类型名称的序列化原始消息。
-    // The name of the message type, retrieved from protobuf API.
-    // 从 protobuf API 中检索的消息类型的名称
-    //string type = 1;
-    // Serialized proto message. 序列化的原始消息。
-    bytes value = 1;
-  }
+message DnsHandlerConfig {
+    repeated string servers       = 1;
+    string queryStrategy = 2;
+}
+
+message RoutingHandlerConfig {
+    string domainStrategy      = 1;
+    repeated RulesConfig rules = 2;
+}
+
+message RulesConfig {
+    string          type        = 1;
+    string          outboundTag = 2;
+    repeated string domain      = 3;
+    repeated string ip          = 4;
+}
+
+message SettingsConfig {
+    repeated VnextConfig vnext = 1;
+}
+
+message VnextConfig {
+    repeated UsersConfig users = 1;
+    string address = 2;
+    int32 port    = 3;
+}
+
+message UsersConfig {
+    string id       = 1;
+    int32 alterId   = 2;
+    string security = 3;
+}
+
+message StreamSettingsConfig {
+    string network = 1;
+    string security = 2;
+    TlsSettingsConfig tlsSettings = 3;
+    WsSettingsConfig wsSettings = 4;
+}
+
+message MuxConfig {
+    bool enabled      = 1;
+    int32 concurrency = 2;
+}
+
+message TlsSettingsConfig {
+    string servername = 1;
+}
+
+message WsSettingsConfig {
+    string path = 1;
+    HeadersConfig headers = 2;
+}
+
+message HeadersConfig {
+    string Host = 1;
+}
