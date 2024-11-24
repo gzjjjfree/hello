@@ -2,13 +2,18 @@ package core
 
 import (
 	"context"
-	//"errors"
+	"errors"
 	"fmt"
 	"reflect"
 	"sync"
 
 	"github.com/gzjjjfree/hello/features"
+	"github.com/gzjjjfree/hello/common"
 )
+
+type Server interface { //Server 是 V2Ray 的一个实例，任何时候都最多只能有一个 Server 实例在运行。
+	common.Runnable
+}
 
 func New(config *Config) (*Instance, error) {
 	var server = &Instance{ctx: context.Background()}
@@ -35,11 +40,57 @@ type resolution struct {
 	callback interface{}
 }
 
-func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
-	if err := addInboundHandlers(server, config.Inbounds); err != nil {
-		return true, err
-	}	
+func (s *Instance) Start() error {
+	s.access.Lock()
+	defer s.access.Unlock()
 
+	s.running = true
+	for _, f := range s.features {
+		fmt.Println("in hello.go func (s *Instance) Start() : ", reflect.TypeOf(f))
+		//k := Tag("outboundTag")
+		//if v := f.Getctx().Value(k); v != nil {
+		//	fmt.Println("in hello.go func (s *Instance) f.ctx : ", v)
+		//}
+		
+		if err := f.Start(); err != nil {
+			return err
+		}
+	}
+
+	fmt.Println("GzV2Ray ", Version(), " started")
+
+	return nil
+}
+
+func (s *Instance) Close() error {
+	fmt.Println("in gzv2ray.go func (s *Instance) Close()")
+	s.access.Lock()
+	defer s.access.Unlock()
+
+	s.running = false
+
+	var errorsmsg []interface{}
+	for _, f := range s.features {
+		if err := f.Close(); err != nil {
+			errorsmsg = append(errorsmsg, err)
+		}
+	}
+	if len(errorsmsg) > 0 {
+		return errors.New("failed to close all features")
+	}
+
+	return nil
+}
+
+func (s *Instance) Type() interface{} {
+	return ServerType()
+}
+
+func ServerType() interface{} {
+	return (*Instance)(nil)
+}
+
+func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 	if err := addOutboundHandlers(server, config.Outbounds); err != nil {
 		return true, err
 	}
@@ -54,7 +105,11 @@ func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 		if err := AddHandler(server, config.Routing); err != nil {
 			return true, err
 		}
-	}	
+	}
+	
+	if err := addInboundHandlers(server, config.Inbounds); err != nil {
+		return true, err
+	}
 
 	return false, nil
 }
@@ -70,6 +125,7 @@ func addInboundHandlers(server *Instance, configs []*InboundHandlerConfig) error
 
 func addOutboundHandlers(server *Instance, configs []*OutboundHandlerConfig) error {
 	for _, outboundConfig := range configs {
+		//fmt.Println("in addOutboundHandlers index is: ", index)
 		if err := AddHandler(server, outboundConfig); err != nil {
 			return err
 		}

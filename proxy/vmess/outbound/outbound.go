@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	"errors"
+	//"errors"
 
 	core "github.com/gzjjjfree/hello"
 	"github.com/gzjjjfree/hello/common"
@@ -23,7 +23,8 @@ type Handler struct {
 
 func New(ctx context.Context, config *core.OutboundHandlerConfig) (*Handler, error) {
 	//v := core.MustFromContext(ctx)
-	var outboundTag core.Tag
+	
+	outboundTag := core.Tag("outboundTag")
 	handler := &Handler{
 		
 		tag: config.Tag,
@@ -34,21 +35,23 @@ func New(ctx context.Context, config *core.OutboundHandlerConfig) (*Handler, err
 	return handler, nil
 }
 
-func (handler *Handler) Start() error{
-	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Start()")
-	return errors.New("Start")
+func (handler *Handler) Start() error {
+	//fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Start()")
+	return nil
 }
 
-func (handler *Handler) Close() error{
+func (handler *Handler) Close() error {
 	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Close()")
-	return errors.New("Close")
+	return nil
 }
 
-func (handler *Handler) Type() interface{}{
+func (handler *Handler) Type() interface{} {
 	return fmt.Sprint("in proxy-vmess-inbound-inbound.go func (handler *Handler) Type()")
 }
 
-
+func (handler *Handler) Getctx() context.Context {
+	return handler.ctx
+}
 
 func init() {
 	common.RegisterConfig((*core.OutboundHandlerConfig)(nil), func(ctx context.Context, config interface{}) (interface{}, error) {

@@ -1,7 +1,7 @@
 package features
 
 import (
-
+	"context"
     "github.com/gzjjjfree/hello/common"
 )
 
@@ -14,4 +14,5 @@ import (
 type Feature interface {
 	common.HasType
 	common.Runnable
+	Getctx()  context.Context
 }

@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"path/filepath"
+	"errors"
+	"runtime"
+	"os/signal"
+	"syscall"
+
 	core "github.com/gzjjjfree/hello"
 	_ "github.com/gzjjjfree/hello/proxy/vmess/inbound"
 	_ "github.com/gzjjjfree/hello/proxy/vmess/outbound"
@@ -12,32 +16,18 @@ import (
 	_ "github.com/gzjjjfree/hello/app/routing"
 )
 
-var (
-	version  = "1.0.0.0"
-	build    = "Custom"
-	codename = "一个学习代理转发的软件"
-	intro    = "从 v2ray 借鉴学习"
-)
-
-func Version() string {
-	return version
-}
-
-func VersionStatement() string {
-	return fmt.Sprintf("Hello %s (%s) %s (%s %s/%s)\n%s", Version(), codename, build, runtime.Version(), runtime.GOOS, runtime.GOARCH, intro)	
-}
-
-func startHello() {
+func startHello() (core.Server, error) {
 	configFile, err := getConfigFilePath()
 	config, err := core.Configload(configFile)
 	if err != nil {
-		fmt.Println("read the configFile err is: ", err)
+		return nil, err
 	} 
 
 	server, err := core.New(config)
 	if server == nil {
-		fmt.Println("server is error")
+		return nil, errors.New("server is error")
 	}
+	return server, nil
 }
 
 func getConfigFilePath() (string, error) {
@@ -51,6 +41,29 @@ func getConfigFilePath() (string, error) {
 	return configFile, err
 }
 func main () {
-	fmt.Println(VersionStatement())
-	startHello()
+	fmt.Println(core.VersionStatement())
+	server, err := startHello()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(23)
+	}
+	if err := server.Start(); err != nil {
+		fmt.Println("Failed to start", err)
+		os.Exit(-1)
+	}
+	defer server.Close()
+
+	runtime.GC()
+
+	{
+		// osSignals: 声明了一个无缓冲的 channel，其类型为 os.Signal，用于接收操作系统信号
+		// 创建一个容量为 1 的 channel。容量为 1 表示该 channel 最多只能存储一个信号
+		osSignals := make(chan os.Signal, 1)
+		// signal.Notify: 这个函数的作用是将指定的信号注册到指定的 channel 上
+		// osSignals: 上面创建的 channel，用于接收信号
+		// os.Interrupt 和 syscall.SIGTERM: 两个常见的操作系统信号，分别表示用户中断 (Ctrl+C) 和终止进程
+		signal.Notify(osSignals, os.Interrupt, syscall.SIGTERM)
+		// <-osSignals: 从 osSignals channel 接收一个信号。当程序执行到这一行时，会阻塞，直到有信号被发送到该 channel
+		<-osSignals
+	}
 }

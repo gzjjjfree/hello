@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	"errors"
+	//"errors"
 
 	core "github.com/gzjjjfree/hello"
 	"github.com/gzjjjfree/hello/common"
@@ -32,7 +32,7 @@ type sniffingConfig struct {
 
 func New(ctx context.Context, config *core.InboundHandlerConfig) (*Handler, error) {
 	//v := core.MustFromContext(ctx)
-	var inboundTag core.Tag
+	var inboundTag core.Tag = "inboundTag"
 	handler := &Handler{
 		clients: &clientsConfig{
 			protocol: config.Protocol,
@@ -51,17 +51,21 @@ func New(ctx context.Context, config *core.InboundHandlerConfig) (*Handler, erro
 }
 
 func (handler *Handler) Start() error{
-	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Start()")
-	return errors.New("Start")
+	//fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Start()")
+	return nil
 }
 
 func (handler *Handler) Close() error{
 	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Close()")
-	return errors.New("Close")
+	return nil
 }
 
 func (handler *Handler) Type() interface{}{
 	return fmt.Sprint("in proxy-vmess-inbound-inbound.go func (handler *Handler) Type()")
+}
+
+func (handler *Handler) Getctx() context.Context{
+	return handler.ctx
 }
 
 var aeadForced = true
