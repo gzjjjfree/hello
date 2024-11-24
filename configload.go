@@ -7,7 +7,7 @@ import (
 )
 
 func Configload(input string) (*Config, error) {
-	fmt.Println("input: ", input)
+	//fmt.Println("input: ", input)
 	file, err := os.Open(input)
 	if err != nil {
 		fmt.Println("读取 config.json 文件出错: ", err)

@@ -29,4 +29,6 @@ func MustFromContext(ctx context.Context) *Instance {
 
 type HelloKey int
 
+type Tag string
+
 const helloKey HelloKey = 1

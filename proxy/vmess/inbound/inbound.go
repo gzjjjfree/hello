@@ -32,6 +32,7 @@ type sniffingConfig struct {
 
 func New(ctx context.Context, config *core.InboundHandlerConfig) (*Handler, error) {
 	//v := core.MustFromContext(ctx)
+	var inboundTag core.Tag
 	handler := &Handler{
 		clients: &clientsConfig{
 			protocol: config.Protocol,
@@ -43,7 +44,7 @@ func New(ctx context.Context, config *core.InboundHandlerConfig) (*Handler, erro
 			enabled:      config.Sniffing.Enabled,
 			destOverride: config.Sniffing.DestOverride,
 		},
-		ctx: ctx,
+		ctx: context.WithValue(ctx, inboundTag, config.Tag),
 	}
 
 	return handler, nil

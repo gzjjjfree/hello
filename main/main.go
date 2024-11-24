@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 	core "github.com/gzjjjfree/hello"
 	_ "github.com/gzjjjfree/hello/proxy/vmess/inbound"
+	_ "github.com/gzjjjfree/hello/proxy/vmess/outbound"
+	_ "github.com/gzjjjfree/hello/app/dns"
+	_ "github.com/gzjjjfree/hello/app/routing"
 )
 
 var (

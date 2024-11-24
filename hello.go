@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"errors"
+	//"errors"
 	"fmt"
 	"reflect"
 	"sync"
@@ -38,28 +38,58 @@ type resolution struct {
 func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
 	if err := addInboundHandlers(server, config.Inbounds); err != nil {
 		return true, err
+	}	
+
+	if err := addOutboundHandlers(server, config.Outbounds); err != nil {
+		return true, err
 	}
+
+	if config.Dns != nil {
+		if err := AddHandler(server, config.Dns); err != nil {
+			return true, err
+		}
+	}
+
+	if config.Routing != nil {
+		if err := AddHandler(server, config.Routing); err != nil {
+			return true, err
+		}
+	}	
+
 	return false, nil
 }
 
 func addInboundHandlers(server *Instance, configs []*InboundHandlerConfig) error {
 	for _, inboundConfig := range configs {
-		if err := AddInboundHandler(server, inboundConfig); err != nil {
+		if err := AddHandler(server, inboundConfig); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func AddInboundHandler(server *Instance, config *InboundHandlerConfig) error {
+func addOutboundHandlers(server *Instance, configs []*OutboundHandlerConfig) error {
+	for _, outboundConfig := range configs {
+		if err := AddHandler(server, outboundConfig); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func AddHandler(server *Instance, config interface {}) error {
 	rawHandler, err := CreateObject(server, config)
 	if err != nil {
 		return err
 	}
-	_, ok := rawHandler.(features.Feature)
-	if !ok {
-		return errors.New("not an InboundHandler")
+	if feature, ok := rawHandler.(features.Feature); ok {
+        server.features = append(server.features, feature)
+		return nil
 	}
-	return nil
+	return fmt.Errorf("not an : %s", reflect.TypeOf(config))
+		
 }
+
+
+
 
