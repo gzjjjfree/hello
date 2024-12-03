@@ -5,9 +5,10 @@ package tcp
 
 import (
 	"syscall"
+	"fmt"
 
-	"github.com/gzjjjfree/gzv2ray-v4/common/net"
-	"github.com/gzjjjfree/gzv2ray-v4/transport/internet"
+	"github.com/gzjjjfree/hello/common/net"
+	"github.com/gzjjjfree/hello/transport/internet"
 )
 
 const SO_ORIGINAL_DST = 80 // nolint: golint,stylecheck
@@ -15,11 +16,11 @@ const SO_ORIGINAL_DST = 80 // nolint: golint,stylecheck
 func GetOriginalDestination(conn internet.Connection) (net.Destination, error) {
 	sysrawconn, f := conn.(syscall.Conn)
 	if !f {
-		return net.Destination{}, newError("unable to get syscall.Conn")
+		return net.Destination{}, fmt.Errorf("unable to get syscall.Conn")
 	}
 	rawConn, err := sysrawconn.SyscallConn()
 	if err != nil {
-		return net.Destination{}, newError("failed to get sys fd").Base(err)
+		return net.Destination{}, fmt.Errorf("failed to get sys fd")
 	}
 	var dest net.Destination
 	err = rawConn.Control(func(fd uintptr) {
@@ -30,14 +31,14 @@ func GetOriginalDestination(conn internet.Connection) (net.Destination, error) {
 		case *net.UDPAddr:
 			remoteIP = addr.IP
 		default:
-			newError("failed to call getsockopt").WriteToLog()
+			fmt.Errorf("failed to call getsockopt")
 			return
 		}
 		if remoteIP.To4() != nil {
 			// ipv4
 			addr, err := syscall.GetsockoptIPv6Mreq(int(fd), syscall.IPPROTO_IP, SO_ORIGINAL_DST)
 			if err != nil {
-				newError("failed to call getsockopt").Base(err).WriteToLog()
+				fmt.Errorf("failed to call getsockopt")
 				return
 			}
 			ip := net.IPAddress(addr.Multiaddr[4:8])
@@ -47,7 +48,7 @@ func GetOriginalDestination(conn internet.Connection) (net.Destination, error) {
 			// ipv6
 			addr, err := syscall.GetsockoptIPv6MTUInfo(int(fd), syscall.IPPROTO_IPV6, SO_ORIGINAL_DST)
 			if err != nil {
-				newError("failed to call getsockopt").Base(err).WriteToLog()
+				fmt.Errorf("failed to call getsockopt")
 				return
 			}
 			ip := net.IPAddress(addr.Addr.Addr[:])
@@ -56,10 +57,10 @@ func GetOriginalDestination(conn internet.Connection) (net.Destination, error) {
 		}
 	})
 	if err != nil {
-		return net.Destination{}, newError("failed to control connection").Base(err)
+		return net.Destination{}, fmt.Errorf("failed to control connection")
 	}
 	if !dest.IsValid() {
-		return net.Destination{}, newError("failed to call getsockopt")
+		return net.Destination{}, fmt.Errorf("failed to call getsockopt")
 	}
 	return dest, nil
 }

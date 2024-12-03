@@ -6,15 +6,17 @@ package tcp
 import (
 	"context"
 	gotls "crypto/tls"
+
 	//"errors"
 	"fmt"
 	"strings"
 	"time"
-//systemnet "net"
+
+	//systemnet "net"
 	//"github.com/gzjjjfree/hello/common"
 	"github.com/gzjjjfree/hello/common/net"
 
-	//"github.com/gzjjjfree/gzv2ray-v4/common/session"
+	//"github.com/gzjjjfree/hello/common/session"
 	"github.com/gzjjjfree/hello/transport/internet"
 	"github.com/gzjjjfree/hello/transport/internet/tls"
 )
@@ -33,65 +35,67 @@ func ListenTCP(ctx context.Context, address net.Address, port net.Port, handler 
 	fmt.Println("in transport-internet-tcp-hub.go func ListenTCP")
 	l := &Listener{}
 	var lc net.ListenConfig
-	addr :=&net.TCPAddr{
+	addr := &net.TCPAddr{
 		IP:   address.IP(),
 		Port: int(port),
 	}
 	ln, err := lc.Listen(ctx, "tcp", addr.String())
 	if err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 	l.listener = ln
 	l.addConn = handler
 	go l.keepAccepting()
 	return l, nil
 }
+
 /*
 // ListenTCP creates a new Listener based on configurations.
-func ListenTCP(ctx context.Context, address net.Address, port net.Port, handler internet.ConnHandler) (internet.Listener, error) {
-	fmt.Println("in transport-internet-tcp-hub.go func ListenTCP")
-	l := &Listener{
-		addConn: handler,
-	}
-	
-	var listener net.Listener
-	var err error
-	var SocketSettings = &internet.SocketConfig{}
-	var AcceptProxyProtocol = false
-	if port == net.Port(0) { // unix
-		listener, err = internet.ListenSystem(ctx, &net.UnixAddr{
-			Name: address.Domain(),
-			Net:  "unix",
-		}, SocketSettings)
-		if err != nil {
-			return nil, err  // errors.New("failed to listen Unix Domain Socket on ")
-		}
-		fmt.Println("listening Unix Domain Socket on ", address)
-		locker := ctx.Value(address.Domain())
-		if locker != nil {
-			l.locker = locker.(*internet.FileLocker)
-		}
-	} else {
-		listener, err = internet.ListenSystem(ctx, &net.TCPAddr{
-			IP:   address.IP(),
-			Port: int(port),
-		}, SocketSettings)
-		if err != nil {
-			return nil, err  // errors.New("failed to listen TCP on")
-		}
-		fmt.Println("listening TCP on ", address, ":", port)
-	}
 
-	if SocketSettings != nil && AcceptProxyProtocol {
-		fmt.Println("accepting PROXY protocol")
+	func ListenTCP(ctx context.Context, address net.Address, port net.Port, handler internet.ConnHandler) (internet.Listener, error) {
+		fmt.Println("in transport-internet-tcp-hub.go func ListenTCP")
+		l := &Listener{
+			addConn: handler,
+		}
+
+		var listener net.Listener
+		var err error
+		var SocketSettings = &internet.SocketConfig{}
+		var AcceptProxyProtocol = false
+		if port == net.Port(0) { // unix
+			listener, err = internet.ListenSystem(ctx, &net.UnixAddr{
+				Name: address.Domain(),
+				Net:  "unix",
+			}, SocketSettings)
+			if err != nil {
+				return nil, err  // errors.New("failed to listen Unix Domain Socket on ")
+			}
+			fmt.Println("listening Unix Domain Socket on ", address)
+			locker := ctx.Value(address.Domain())
+			if locker != nil {
+				l.locker = locker.(*internet.FileLocker)
+			}
+		} else {
+			listener, err = internet.ListenSystem(ctx, &net.TCPAddr{
+				IP:   address.IP(),
+				Port: int(port),
+			}, SocketSettings)
+			if err != nil {
+				return nil, err  // errors.New("failed to listen TCP on")
+			}
+			fmt.Println("listening TCP on ", address, ":", port)
+		}
+
+		if SocketSettings != nil && AcceptProxyProtocol {
+			fmt.Println("accepting PROXY protocol")
+		}
+
+		l.listener = listener
+
+		// 开启一个协程，监听接收的数据
+		go l.keepAccepting()
+		return l, nil
 	}
-
-	l.listener = listener
-
-	// 开启一个协程，监听接收的数据
-	go l.keepAccepting()
-	return l, nil
-}
 */
 func (v *Listener) keepAccepting() {
 	fmt.Println("in transport-internet-tcp-hub.go func (v *Listener) keepAccepting()")

@@ -2,10 +2,10 @@ package internet
 
 import (
 	"context"
-	"runtime"
-	"syscall"
 	"errors"
 	"fmt"
+	"runtime"
+	"syscall"
 
 	"github.com/pires/go-proxyproto"
 
