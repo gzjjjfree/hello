@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package hello.core.common.protocol;
+option go_package = "github.com/gzjjjfree/hello/common/protocol";
+
+import "common/net/address.proto";
+import "common/protocol/user.proto";
+
+message ServerEndpoint {
+  hello.core.common.net.IPOrDomain address = 1;
+  uint32 port = 2;
+  repeated hello.core.common.protocol.User user = 3;
+}

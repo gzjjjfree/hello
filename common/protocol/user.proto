@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package hello.core.common.protocol;
+option go_package = "github.com/gzjjjfree/hello/common/protocol";
+
+import "common/serial/typed_message.proto";
+
+// User is a generic user for all procotols.
+message User {
+  uint32 level = 1;
+  string email = 2;
+
+  // Protocol specific account information. Must be the account proto in one of
+  // the proxies.
+  hello.core.common.serial.TypedMessage account = 3;
+}

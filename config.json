@@ -143,6 +143,8 @@
           "outboundTag": "direct",
           "domain": [
             "static.jyshare.com",
+            "gzbaobao.top",
+            "gzbao.top",
             "geosite:cn"
             ]
         },

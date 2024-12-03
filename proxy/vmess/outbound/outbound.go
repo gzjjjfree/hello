@@ -8,6 +8,8 @@ import (
 
 	core "github.com/gzjjjfree/hello"
 	"github.com/gzjjjfree/hello/common"
+	"github.com/gzjjjfree/hello/common/session"
+
 	//"github.com/gzjjjfree/hello/proxy/vmess/encoding"
 )
 
@@ -24,12 +26,12 @@ type Handler struct {
 func New(ctx context.Context, config *core.OutboundHandlerConfig) (*Handler, error) {
 	//v := core.MustFromContext(ctx)
 	
-	outboundTag := core.Tag("outboundTag")
+	//outboundTag := core.Tag("outboundTag")
 	handler := &Handler{
 		
 		tag: config.Tag,
 		
-		ctx: context.WithValue(ctx, outboundTag, config.Tag),
+		ctx: session.ContextWithOutbounds(ctx, config),
 	}
 
 	return handler, nil
@@ -41,7 +43,7 @@ func (handler *Handler) Start() error {
 }
 
 func (handler *Handler) Close() error {
-	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Close()")
+	fmt.Println("in proxy-vmess-outbound-outbound.go func (handler *Handler) Close()")
 	return nil
 }
 

@@ -10,7 +10,7 @@ import (
 // CreateObject 根据其配置创建一个对象。配置类型必须通过 RegisterConfig() 注册。
 func CreateObject(ctx context.Context, config interface{}) (interface{}, error) {
 	configType := reflect.TypeOf(config)
-	
+	fmt.Println("in common-type.go func CreateObject configType: ", configType)
 	creator, found := typeCreatorRegistry[configType]
 	if !found {
 		fmt.Println("in common-type.go func CreateObject !found")
@@ -27,6 +27,7 @@ var (
 )
 // RegisterConfig 注册一个全局配置创建者。配置可以为 nil，但必须有一个类型
 func RegisterConfig(config interface{}, configCreator ConfigCreator) error {	
+	fmt.Println("in common-type.go func RegisterConfig : ", reflect.TypeOf(config))
 	configType := reflect.TypeOf(config)
 	if _, found := typeCreatorRegistry[configType]; found {
 		return errors.New(configType.Name() + " is already registered")

@@ -8,6 +8,7 @@ import (
 
 	core "github.com/gzjjjfree/hello"
 	"github.com/gzjjjfree/hello/common"
+	"github.com/gzjjjfree/hello/common/session"
 	//"github.com/gzjjjfree/hello/proxy/vmess/encoding"
 )
 
@@ -22,10 +23,10 @@ type Handler struct {
 
 func New(ctx context.Context, config *core.DnsHandlerConfig) (*Handler, error) {
 	//v := core.MustFromContext(ctx)
-	var dnsTag core.Tag = "dnsTag"
+	//var dnsTag core.Tag = "dnsTag"
 	handler := &Handler{
 		
-		ctx: context.WithValue(ctx, dnsTag, "dns"),
+		ctx: session.ContextWithDns(ctx, config),
 	}
 
 	return handler, nil
@@ -37,7 +38,7 @@ func (handler *Handler) Start() error {
 }
 
 func (handler *Handler) Close() error {
-	fmt.Println("in proxy-vmess-inbound-inbound.go func (handler *Handler) Close()")
+	fmt.Println("in app-dns-dns.go func (handler *Handler) Close()")
 	return nil
 }
 

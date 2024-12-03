@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package hello.core.common.net;
+option go_package = "github.com/gzjjjfree/hello/common/net";
+
+enum Network {
+  Unknown = 0;
+
+  RawTCP = 1 [deprecated = true];
+  TCP = 2;
+  UDP = 3;
+  UNIX = 4;
+}
+
+// NetworkList is a list of Networks.
+// NetworkList 是网络列表。
+message NetworkList { repeated Network network = 1; }

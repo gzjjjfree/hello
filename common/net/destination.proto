@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package hello.core.common.net;
+option go_package = "github.com/gzjjjfree/hello/common/net";
+
+import "common/net/network.proto";
+import "common/net/address.proto";
+
+// Endpoint of a network connection.
+message Endpoint {
+  Network network = 1;
+  IPOrDomain address = 2;
+  uint32 port = 3;
+}

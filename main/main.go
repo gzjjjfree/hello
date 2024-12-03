@@ -14,6 +14,8 @@ import (
 	_ "github.com/gzjjjfree/hello/proxy/vmess/outbound"
 	_ "github.com/gzjjjfree/hello/app/dns"
 	_ "github.com/gzjjjfree/hello/app/routing"
+	_ "github.com/gzjjjfree/hello/transport/internet/tcp"
+	_ "github.com/gzjjjfree/hello/common/bytespool"
 )
 
 func startHello() (core.Server, error) {

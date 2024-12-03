@@ -2,10 +2,10 @@ package features
 
 import (
 	"context"
-    "github.com/gzjjjfree/hello/common"
+	"fmt"
+
+	"github.com/gzjjjfree/hello/common"
 )
-
-
 
 // Feature is the interface for V2Ray features. All features must implement this interface.
 // Feature 是 V2Ray 特性的接口，所有特性都必须实现此接口。
@@ -14,5 +14,9 @@ import (
 type Feature interface {
 	common.HasType
 	common.Runnable
-	Getctx()  context.Context
+	Getctx() context.Context
+}
+
+func PrintDeprecatedFeatureWarning(feature string) {
+	fmt.Println("You are using a deprecated feature: . Please update your config file with latest configuration format, or update your client software.")
 }
